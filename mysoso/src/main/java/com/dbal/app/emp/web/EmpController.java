@@ -1,5 +1,7 @@
 package com.dbal.app.emp.web;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,7 +15,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
 
+import com.dbal.app.common.FileRenamePolicy;
 import com.dbal.app.emp.EmpVO;
 import com.dbal.app.emp.mapper.EmpMapper;
 import com.dbal.app.emp.service.EmpService;
@@ -22,6 +27,18 @@ import com.dbal.app.emp.service.EmpService;
 public class EmpController {
 	@Autowired
 	EmpService empService;
+	
+	//파일 다운로드  vo 필요없고 리퀘스트 파람해서 바로 넘김
+	@RequestMapping("/download")
+	
+	public ModelAndView download(@RequestParam String name) {
+		ModelAndView mv = new ModelAndView();
+		mv.setViewName("download");
+		mv.addObject("downloadFile", new File("d:/upload",name));
+		return mv;
+	}
+	
+	
 	
 //	@RequestMapping("/empList.do")
 //	public String empList(Model model) {
@@ -41,24 +58,38 @@ public class EmpController {
 		return "empty/emp/insertEmp";
 	}
 	
-	//등록처리
-	@RequestMapping("/insertEmp.do")
+	//등록처리 +첨부파일등록 
+	@RequestMapping("/empInsert")
 	//@ModelAttribute("evo") 이름을 evo로 사용하겠다.
 	public String insertEmp(@ModelAttribute("evo") EmpVO vo,  //1. 커멘드객체
 								Model model,
 								@RequestParam String firstName, // 2. = request.getParam("firstName")
 								@RequestParam(required = false, defaultValue = "kim", value = "lastName") String ln,
 								@RequestParam Map map
-			) {
-		empService.empInsert(vo);
+			) throws IOException {
 		System.out.println(vo.getFirstName() + ":" + vo.getLastName());
 		System.out.println("parameter:" + firstName + ":" + ln);
 		System.out.println("map" + map.get("firstName") + ":"+ map.get("lastName"));
 		//model.addAttribute("evo", vo);
+		
+		//첨부파일 처리
+		MultipartFile file = vo.getUploadFile();
+		String filename = "";
+		if( file != null && file.getSize() > 0) {
+			File upFile = FileRenamePolicy.rename(new File("d:/upload",file.getOriginalFilename()));
+			filename = upFile.getName();
+			file.transferTo(upFile);
+			
+//			file.transferTo(FileRenamePolicy.rename(new File("d:/upload/", filename)) );
+		}
+		vo.setProfile(filename);
+		
+		empService.empInsert(vo);
+		
 		return "home";
 	}
 	
-	
+
 	//단건조회
 	@RequestMapping("getEmp/{employeeId}/{firstName}") //getEmp?employeeId=aaa
 	public String getEmp(@PathVariable Integer employeeId, @PathVariable String firstName) {

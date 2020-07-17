@@ -2,6 +2,8 @@ package com.dbal.app.emp;
 
 import java.util.Date;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -14,6 +16,11 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class EmpVO {
+	
+	MultipartFile uploadFile;
+	String profile;
+	String msg;
+	
 	@JsonProperty(value = "id")
 	String employeeId;
 
@@ -21,8 +28,8 @@ public class EmpVO {
 	String lastName;
 	String email;
 	
-	@JsonFormat(pattern = "yyyy-MM-dd HH")
-	Date hireDate; // LocalDateTime  , Date
+//	@JsonFormat(pattern = "yyyy-MM-dd HH")
+	String hireDate; // LocalDateTime  , Date
 	
 	@JsonIgnore 
 	String jobId;
@@ -38,7 +45,7 @@ public class EmpVO {
 	
 	
 	@Builder
-	public EmpVO(String firstName, String lastName, String email, Date hireDate, String employeeId, String jobId,
+	public EmpVO(String firstName, String lastName, String email, String hireDate, String employeeId, String jobId,
 			String departmentId, Integer salary, Integer[] employeeIds) {
 		super();
 		this.firstName = firstName;

@@ -31,7 +31,9 @@ public class EmpServiceImpl implements EmpService {
 	//회원등록
 	@Override
 	public void empInsert(EmpVO empVO) {
-		
+		System.out.println("프로시져 호출");
+		empMapper.empInsert(empVO);
+//		empMapper.insertEmpProc(empVO);
 	}
 
 	@Override
@@ -50,5 +52,6 @@ public class EmpServiceImpl implements EmpService {
 	public List<Map<String, Object>> getDeptEmpCnt() {
 		return empMapper.getDeptEmpCnt();
 	}
+	
 
 }

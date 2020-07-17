@@ -43,7 +43,7 @@
 			            <th>Column 3</th>
 			        </tr>
 			    </thead>
-			</table>
+			</table>			
 		</div>
 		<div class="col">
 			<form>
