@@ -22,7 +22,7 @@
 				$('#table_id').DataTable(
 					{ajax: {url:'ajaxEmpList', dataSrc:''},
 						columns:[
-							{data:"employeeId"},
+							{data:"id"},
 							{data:"firstName"},
 							{data:"lastName"}
 					]});
@@ -47,12 +47,12 @@
 		</div>
 		<div class="col">
 			<form>
+				<input type="text" name="firstName"><br>
+				<input type="text" name="lastName">
 				<div class="">
 					<button class="btn btn-success fl">등록</button>
 					<button class="btn btn-success">수정</button>
 				</div>	
-				<input type="text" name="firstName"><br>
-				<input type="text" name="lastName">
 			</form>
 		</div>
 	</div>

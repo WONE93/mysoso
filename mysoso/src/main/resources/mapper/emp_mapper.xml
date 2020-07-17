@@ -45,7 +45,7 @@
 				<foreach collection="employeeIds" item="id" open="(" close=")" separator=",">
 					#{id}
 				</foreach>
-		</if>
+		</if> 
 		</where>
 		
 		ORDER BY first_name
