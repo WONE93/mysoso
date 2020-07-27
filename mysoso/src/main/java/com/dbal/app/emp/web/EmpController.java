@@ -2,12 +2,18 @@ package com.dbal.app.emp.web;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.io.InputStream;
+import java.sql.Connection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.sql.DataSource;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -20,13 +26,23 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.dbal.app.common.FileRenamePolicy;
 import com.dbal.app.emp.EmpVO;
-import com.dbal.app.emp.mapper.EmpMapper;
 import com.dbal.app.emp.service.EmpService;
+
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.util.JRLoader;
 
 @Controller //bean등록, dispatcher 서블릿이 인식할 수 있는 컨트롤러로 변환 //@component 상속
 public class EmpController {
 	@Autowired
 	EmpService empService;
+	
+	@Autowired
+	@Qualifier("dataSource")
+	DataSource datasource;
 	
 	//파일 다운로드  vo 필요없고 리퀘스트 파람해서 바로 넘김
 	@RequestMapping("/download")
@@ -90,14 +106,6 @@ public class EmpController {
 	}
 	
 
-	//단건조회
-	@RequestMapping("getEmp/{employeeId}/{firstName}") //getEmp?employeeId=aaa
-	public String getEmp(@PathVariable Integer employeeId, @PathVariable String firstName) {
-		System.out.println(employeeId);
-		System.out.println(firstName);
-		return "home";
-	}
-	
 	//목록조회
 	@RequestMapping("empList")
 	public String empList(Model model, EmpVO empVO) {
@@ -124,10 +132,45 @@ public class EmpController {
 	}
 	
 	
+	//레포트 출력
+	@RequestMapping("report.do")
+	public void report(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		Connection conn = datasource.getConnection();
+//		InputStream jasperStream = getClass().getResourceAsStream("/reports/empList.jasper");
+//		JasperReport jasperReport = (JasperReport) JRLoader.loadObject(jasperStream);
+		
+		InputStream stream = getClass().getResourceAsStream("/reports/empList.jrxml");
+		JasperReport jasperReport = JasperCompileManager.compileReport(stream);
+		//파라미터맵
+		HashMap<String,Object> map = new HashMap<>();
+		map.put("p_departmentId", request.getParameter("dept"));
+		
+		JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, map, conn);
+		JasperExportManager.exportReportToPdfStream(jasperPrint, response.getOutputStream());
+	}
+	
+	//단건조회
+	@RequestMapping("getEmp/{employeeId}") //getEmp?employeeId=aaa
+	public String getEmp(@PathVariable String employeeId
+			, Model model, EmpVO empVO) {
+		empVO.setEmployeeId(employeeId);
+		model.addAttribute("emp", empService.getEmp(empVO));
+		return "empty/emp/getEmp";
+	}
+	
+	@RequestMapping("getEmpAjax")
+	@ResponseBody
+	public EmpVO getEmpAjax(EmpVO empVO) {
+		return empService.getEmp(empVO);
+	}
+	
+	
 	//수정폼
 	
 	//수정처리
 	
 	//삭제처리
+	
+	
 	
 }

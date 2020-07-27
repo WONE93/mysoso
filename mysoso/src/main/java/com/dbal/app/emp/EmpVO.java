@@ -21,7 +21,7 @@ public class EmpVO {
 	String profile;
 	String msg;
 	
-	@JsonProperty(value = "id")
+//	@JsonProperty(value = "id")
 	String employeeId;
 
 	String firstName;

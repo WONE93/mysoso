@@ -217,6 +217,27 @@
 		    <scope>provided</scope>
 		</dependency>
 		
+		<!-- report  -->
+		<dependency>
+			<groupId>net.sf.jasperreports</groupId>
+			<artifactId>jasperreports</artifactId>
+			<version>6.13.0</version>
+		</dependency>		
+		
+		<!-- 엑셀출력 -->
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml</artifactId>
+			<version>3.14</version>
+		</dependency>
+		
+		<!-- 폰트쓰는법 -->
+		<dependency>
+			<groupId>net.sf.jasperreports</groupId>
+			<artifactId>jasperreports-fonts</artifactId>
+			<version>6.13.0</version>
+		</dependency>
+		
 
 	</dependencies>
 	<build>
